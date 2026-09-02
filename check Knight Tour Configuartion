@@ -1,0 +1,39 @@
+class Solution {
+    public boolean checkValidGrid(int[][] grid) {
+        int n = grid.length;
+
+        // Starting position must be 0
+        if (grid[0][0] != 0) {
+            return false;
+        }
+
+        // position[value] = {row, col}
+        int[][] position = new int[n * n][2];
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                position[grid[i][j]][0] = i;
+                position[grid[i][j]][1] = j;
+            }
+        }
+
+        // Check every consecutive move
+        for (int value = 0; value < n * n - 1; value++) {
+            int r1 = position[value][0];
+            int c1 = position[value][1];
+
+            int r2 = position[value + 1][0];
+            int c2 = position[value + 1][1];
+
+            int rowDiff = Math.abs(r1 - r2);
+            int colDiff = Math.abs(c1 - c2);
+
+            if (!((rowDiff == 2 && colDiff == 1) ||
+                  (rowDiff == 1 && colDiff == 2))) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+}
