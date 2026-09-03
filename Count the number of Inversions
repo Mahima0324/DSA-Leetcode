@@ -1,0 +1,65 @@
+class Solution {
+    public int numberOfPermutations(int n, int[][] requirements) {
+
+        final int MOD = 1_000_000_007;
+
+        // req[i] = required number of inversions for prefix [0...i]
+        // -1 means there is no requirement at index i
+        int[] req = new int[n];
+
+        java.util.Arrays.fill(req, -1);
+
+        int maxInv = 0;
+
+        for (int[] r : requirements) {
+            int index = r[0];
+            int count = r[1];
+
+            req[index] = count;
+            maxInv = Math.max(maxInv, count);
+        }
+
+        // Prefix [0] can only have 0 inversions.
+        if (req[0] > 0) {
+            return 0;
+        }
+
+        req[0] = 0;
+
+        // dp[i][j] =
+        // number of permutations of [0...i]
+        // having exactly j inversions
+        int[][] dp = new int[n][maxInv + 1];
+
+        dp[0][0] = 1;
+
+        for (int i = 1; i < n; i++) {
+
+            int left = 0;
+            int right = maxInv;
+
+            // If there is a requirement at this index,
+            // we only need to calculate that exact value.
+            if (req[i] != -1) {
+                left = req[i];
+                right = req[i];
+            }
+
+            for (int j = left; j <= right; j++) {
+
+                // When adding the new element,
+                // it can create 0,1,2,...,i new inversions.
+                for (int k = 0; k <= Math.min(i, j); k++) {
+
+                    dp[i][j] += dp[i - 1][j - k];
+
+                    if (dp[i][j] >= MOD) {
+                        dp[i][j] -= MOD;
+                    }
+                }
+            }
+        }
+
+        return dp[n - 1][req[n - 1]];
+    }
+}
