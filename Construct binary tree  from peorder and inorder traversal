@@ -1,0 +1,30 @@
+class Solution {
+    int preIndex = 0;
+
+    public TreeNode buildTree(int[] preorder, int[] inorder) {
+        return solve(preorder, inorder, 0, inorder.length - 1);
+    }
+
+    public TreeNode solve(int[] preorder, int[] inorder, int start, int end) {
+
+        if (start > end) {
+            return null;
+        }
+
+        int value = preorder[preIndex];
+        preIndex++;
+
+        TreeNode root = new TreeNode(value);
+
+        int index = start;
+
+        while (inorder[index] != value) {
+            index++;
+        }
+
+        root.left = solve(preorder, inorder, start, index - 1);
+        root.right = solve(preorder, inorder, index + 1, end);
+
+        return root;
+    }
+}
