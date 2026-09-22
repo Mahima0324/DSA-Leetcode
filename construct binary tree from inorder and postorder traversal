@@ -1,0 +1,37 @@
+// LeetCode 106: Construct Binary Tree from Inorder and Postorder Traversal
+
+class Solution {
+    public TreeNode buildTree(int[] inorder, int[] postorder) {
+        if (inorder == null || postorder == null || inorder.length != postorder.length) {
+            return null;
+        }
+        return build(inorder, 0, inorder.length - 1, postorder, 0, postorder.length - 1);
+    }
+
+    private TreeNode build(int[] inorder, int inStart, int inEnd,
+                           int[] postorder, int postStart, int postEnd) {
+        if (inStart > inEnd || postStart > postEnd) {
+            return null;
+        }
+
+        // Last element in postorder is the root
+        TreeNode root = new TreeNode(postorder[postEnd]);
+
+        // Find root index in inorder
+        int inRootIndex = inStart;
+        while (inRootIndex <= inEnd && inorder[inRootIndex] != root.val) {
+            inRootIndex++;
+        }
+
+        int leftTreeSize = inRootIndex - inStart;
+
+        // Build left and right subtrees recursively
+        root.left = build(inorder, inStart, inRootIndex - 1,
+                          postorder, postStart, postStart + leftTreeSize - 1);
+
+        root.right = build(inorder, inRootIndex + 1, inEnd,
+                           postorder, postStart + leftTreeSize, postEnd - 1);
+
+        return root;
+    }
+}
