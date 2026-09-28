@@ -1,0 +1,54 @@
+import java.util.*;
+
+class TreeNode {
+    int val;
+    TreeNode left, right;
+    TreeNode(int x) { val = x; }
+}
+
+public class Solution {
+    Map<Integer, TreeNode> roots = new HashMap<>();
+    Map<Integer, Integer> count = new HashMap<>();
+
+    public TreeNode canMerge(List<TreeNode> trees) {
+        // Store all roots
+        for (TreeNode t : trees) {
+            roots.put(t.val, t);
+            count.put(t.val, count.getOrDefault(t.val, 0) + 1);
+            if (t.left != null) count.put(t.left.val, count.getOrDefault(t.left.val, 0) + 1);
+            if (t.right != null) count.put(t.right.val, count.getOrDefault(t.right.val, 0) + 1);
+        }
+
+        // Find the unique root (appears only once)
+        TreeNode root = null;
+        for (TreeNode t : trees) {
+            if (count.get(t.val) == 1) {
+                root = t;
+                break;
+            }
+        }
+        if (root == null) return null;
+
+        // Merge recursively
+        if (!merge(root, Integer.MIN_VALUE, Integer.MAX_VALUE)) return null;
+
+        // Check if all trees are merged
+        if (roots.size() > 1) return null;
+        return root;
+    }
+
+    private boolean merge(TreeNode node, int low, int high) {
+        if (node == null) return true;
+        if (node.val <= low || node.val >= high) return false;
+
+        // If node is a root of another tree, merge it
+        if (roots.containsKey(node.val) && roots.get(node.val) != node) {
+            TreeNode t = roots.get(node.val);
+            node.left = t.left;
+            node.right = t.right;
+            roots.remove(node.val);
+        }
+
+        return merge(node.left, low, node.val) && merge(node.right, node.val, high);
+    }
+}
