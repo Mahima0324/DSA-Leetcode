@@ -1,0 +1,26 @@
+class Solution {
+    public int kthSmallest(int[][] matrix, int k) {
+        int n = matrix.length;
+        int left = matrix[0][0];
+        int right = matrix[n - 1][n - 1];
+        
+        // Binary search on the value range
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            int count = countLessEqual(matrix, mid, n);
+            
+            if (count < k) {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+        
+        return left;
+    }
+    
+    // Count how many numbers <= mid
+    private int countLessEqual(int[][] matrix, int mid, int n) {
+        int count = 0;
+        int row = n - 1, col = 0;
+        
