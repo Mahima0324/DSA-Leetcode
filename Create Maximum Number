@@ -1,0 +1,94 @@
+class Solution {
+
+    public int[] maxNumber(int[] nums1, int[] nums2, int k) {
+
+        int m = nums1.length;
+        int n = nums2.length;
+
+        int[] ans = new int[k];
+
+        int start = Math.max(0, k - n);
+        int end = Math.min(k, m);
+
+        for (int i = start; i <= end; i++) {
+
+            int[] part1 = maxSubsequence(nums1, i);
+            int[] part2 = maxSubsequence(nums2, k - i);
+
+            int[] candidate = merge(part1, part2, k);
+
+            if (greater(candidate, 0, ans, 0)) {
+                ans = candidate;
+            }
+        }
+
+        return ans;
+    }
+
+    private int[] maxSubsequence(int[] nums, int k) {
+
+        int n = nums.length;
+        int[] stack = new int[k];
+
+        int top = -1;
+        int remain = n;
+
+        for (int num : nums) {
+
+            while (top >= 0
+                    && stack[top] < num
+                    && remain > k - top - 1) {
+                top--;
+            }
+
+            if (top + 1 < k) {
+                stack[++top] = num;
+            }
+
+            remain--;
+        }
+
+        return stack;
+    }
+
+    private int[] merge(int[] nums1, int[] nums2, int k) {
+
+        int[] merged = new int[k];
+
+        int i = 0;
+        int j = 0;
+        int idx = 0;
+
+        while (idx < k) {
+
+            if (greater(nums1, i, nums2, j)) {
+                merged[idx++] = nums1[i++];
+            } else {
+                merged[idx++] = nums2[j++];
+            }
+        }
+
+        return merged;
+    }
+
+    private boolean greater(int[] nums1, int i,
+                           int[] nums2, int j) {
+
+        while (i < nums1.length &&
+               j < nums2.length &&
+               nums1[i] == nums2[j]) {
+            i++;
+            j++;
+        }
+
+        if (j == nums2.length) {
+            return true;
+        }
+
+        if (i == nums1.length) {
+            return false;
+        }
+
+        return nums1[i] > nums2[j];
+    }
+}
